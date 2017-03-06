@@ -18,7 +18,8 @@ I use histogram matching first to create a noise picture which has the same dist
 **Python package:** Numpy, Scipy, skimage 
 
 ### Data
-The VGG-19 NPY file can be downloaded from [here](chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html#uri=https://mega.nz/#!xZ8glS6J!MAnE91ND_WyfZ_8mvkuSa2YcA7q-1ehfSm-Q1fxOvvs)
+The VGG-19 NPY file can be downloaded from [here](https://mega.nz/#!xZ8glS6J!MAnE91ND_WyfZ_8mvkuSa2YcA7q-1ehfSm-Q1fxOvvs)
+
 ### Instruction
 `$ python texture_synthesis.py pebbles.jpg`
 
