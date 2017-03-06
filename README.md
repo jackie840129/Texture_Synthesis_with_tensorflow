@@ -1,4 +1,4 @@
-# Texture_Synthesis_with_tensorflow
+# Texture_Synthesis_with_tensorflow    make:Jan.2016
 This is an undergraduate research project that try to synthesis textures by using convolutional nerual networks with toolkit Tensorflow.
 
 The algorithm and the origin paper is from "Texture Synthesis Using Convolutional Neural Networks" (Gatys et al., NIPS 2015) (http://arxiv.org/abs/1505.07376).
