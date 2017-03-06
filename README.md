@@ -13,7 +13,7 @@ I use histogram matching first to create a noise picture which has the same dist
 
 ## Usage
 ### Require
-**Tensorflow**: version:0.8.0 !!
+**Tensorflow**: version : **0.8.0** !!
 
 **Python package:** Numpy, Scipy, skimage 
 
@@ -25,7 +25,7 @@ The VGG-19 NPY file can be downloaded from [here](https://mega.nz/#!xZ8glS6J!MAn
 
 (Put your images in **test_data/** folder and directly type the image name)
 
-**The output images will be generated in result/ directory,which contains many images with different phase
+**The output images will be generated in result/ directory,which contains many images with different phase**
 
 ## Results
 ### Pebbles
