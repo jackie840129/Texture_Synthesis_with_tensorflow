@@ -12,7 +12,8 @@ The algorithm and the origin paper is from "Texture Synthesis Using Convolutiona
 I use histogram matching first to create a noise picture which has the same distribution as the origin image.
 
 ## Results
+origin
+<img src="http://i.imgur.com/hlfckUu.png" width="100" height="100>
 
-origin ![image](http://i.imgur.com/hlfckUu.png = 50x50) 
 
 synthesis ![alt tag](http://i.imgur.com/s3zyPM7.png)
