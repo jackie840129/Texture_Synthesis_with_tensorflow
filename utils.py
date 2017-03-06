@@ -3,12 +3,12 @@ import skimage.io
 import skimage.transform
 import numpy as np
 import tensorflow as tf
-# synset = [l.strip() for l in open('synset.txt').readlines()]
+import scipy
+import scipy.interpolate
 def show_image(img):
     skimage.io.imshow(img)
     skimage.io.show()
 
-# returns image of shape [224, 224, 3]
 # [height, width, depth]
 def load_image(path):
     # load image
@@ -23,51 +23,84 @@ def load_image(path):
     crop_img = img[yy: yy + short_edge, xx: xx + short_edge]
     # resize to 224, 224
     resized_img = skimage.transform.resize(crop_img, (256, 256))
+    print( "Resize Image Shape: ", resized_img.shape)
     return resized_img
 
 
-# returns the top1 string
-def print_prob(prob, file_path):
-    synset = [l.strip() for l in open(file_path).readlines()]
+def his_noise(origin):
+    his,b = np.histogram(origin,256,normed=True)
+    calculate = origin.reshape(256*256,3)
+    lis = []
+    for x in calculate:
+        n_bin = x[0]*256*256+x[1]*256+x[2]
+        lis.append(n_bin)
+    long = np.array(lis)
+    his,b = np.histogram(long,256*256*256,normed=True)
+    b = np.zeros(256*256*256+1,dtype=np.float32)
+    for i in range(0,len(b)):
+        b[i]=i
 
-    # print prob
-    pred = np.argsort(prob)[::-1]
+    cum_values = np.zeros(b.shape)
+    cum_values[1:] = np.cumsum(his*np.diff(b))
+    inv_cdf = scipy.interpolate.interp1d(cum_values, b,kind='nearest',bounds_error=True)
+    rand = np.random.uniform(0.,1.,256*256)
+    answer = inv_cdf(rand)
+    ko = []
+    for i in answer:
+        R = i%256
+        G = (i-R)%(256*256)/256
+        B = (i-256*G-R)/(256*256)
+        ko.append([B,G,R])
+    answer = np.array(ko).reshape(256,256,3)/255.
+    return answer
+# r = np.asarray(uniform_hist(org_image[:,:,i].ravel()))
+def uniform_hist(X):
+    '''
+    Maps data distribution onto uniform histogram
+    
+    :param X: data vector
+    :return: data vector with uniform histogram
+    '''
+    Z = [(x, i) for i, x in enumerate(X)]
+    Z.sort()
+    n = len(Z)
+    Rx = [0]*n
+    start = 0 # starting mark
+    for i in range(1, n):
+        if Z[i][0] != Z[i-1][0]:
+            for j in range(start, i):
+                Rx[Z[j][1]] = float(start+1+i)/2.0;
+            start = i
+    for j in range(start, n):
+        Rx[Z[j][1]] = float(start+1+n)/2.0;
+    return np.asarray(Rx) / float(len(Rx))
+def histogram_matching(org_image, match_image, grey=False, n_bins=100):
+    '''
+    Matches histogram of each color channel of org_image with histogram of match_image
+    :param org_image: image whose distribution should be remapped
+    :param match_image: image whose distribution should be matched
+    :param grey: True if images are greyscale
+    :param n_bins: number of bins used for histogram calculation
+    :return: org_image with same histogram as match_image
+    '''
 
-    # Get top1 label
-    top1 = synset[pred[0]]
-    print("Top1: ", top1, prob[pred[0]])
-    # Get top5 label
-    top5 = [(synset[pred[i]], prob[pred[i]]) for i in range(5)]
-    print("Top5: ", top5)
-    return top1
-
-
-def load_image2(path, height=None, width=None):
-    # load image
-    img = skimage.io.imread(path)
-    img = img / 255.0
-    if height is not None and width is not None:
-        ny = height
-        nx = width
-    elif height is not None:
-        ny = height
-        nx = img.shape[1] * ny / img.shape[0]
-    elif width is not None:
-        nx = width
-        ny = img.shape[0] * nx / img.shape[1]
+    if grey:
+        hist, bin_edges = np.histogram(match_image.ravel(), bins=n_bins, density=True)
+        cum_values = np.zeros(bin_edges.shape)
+        cum_values[1:] = np.cumsum(hist*np.diff(bin_edges))
+        inv_cdf = scipy.interpolate.interp1d(cum_values, bin_edges,bounds_error=True)
+        r = np.asarray(uniform_hist(org_image.ravel()))
+        r[r>cum_values.max()] = cum_values.max()    
+        matched_image = inv_cdf(r).reshape(org_image.shape) 
     else:
-        ny = img.shape[0]
-        nx = img.shape[1]
-    return skimage.transform.resize(img, (ny, nx))
-
-
-def test():
-    img = skimage.io.imread("./test_data/starry_night.jpg")
-    ny = 300
-    nx = img.shape[1] * ny / img.shape[0]
-    img = skimage.transform.resize(img, (ny, nx))
-    skimage.io.imsave("./test_data/test/output.jpg", img)
-
-
-if __name__ == "__main__":
-    test()
+        matched_image = np.zeros_like(org_image)
+        for i in range(3):
+            hist, bin_edges = np.histogram(match_image[:,:,i].ravel(), bins=n_bins, density=True)
+            cum_values = np.zeros(bin_edges.shape)
+            cum_values[1:] = np.cumsum(hist*np.diff(bin_edges))
+            inv_cdf = scipy.interpolate.interp1d(cum_values, bin_edges,bounds_error=True)
+            r = np.asarray(uniform_hist(org_image[:,:,i].ravel()))
+            r[r>cum_values.max()] = cum_values.max()    
+            matched_image[:,:,i] = inv_cdf(r).reshape(org_image[:,:,i].shape)
+        
+    return matched_image
