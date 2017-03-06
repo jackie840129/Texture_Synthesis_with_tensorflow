@@ -11,9 +11,30 @@ The algorithm and the origin paper is from "Texture Synthesis Using Convolutiona
 ### Changes
 I use histogram matching first to create a noise picture which has the same distribution as the origin image.
 
+## Usage
+### Require
+**Tensorflow**: version:0.8.0 !!
+
+**Python package:** Numpy, Scipy, skimage 
+
+### Data
+The VGG-19 NPY file can be downloaded from [here](chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html#uri=https://mega.nz/#!xZ8glS6J!MAnE91ND_WyfZ_8mvkuSa2YcA7q-1ehfSm-Q1fxOvvs)
+### Instruction
+`$ python texture_synthesis.py pebbles.jpg`
+
+(Put your images in **test_data/** folder and directly type the image name)
+
+**The output images will be generated in result/ directory,which contains many images with different phase
+
 ## Results
-origin
-<img src="http://i.imgur.com/hlfckUu.png" width="100" height="100>
+### Pebbles
+**origin**
+<img src="http://i.imgur.com/hlfckUu.png" width="256" height="256">
+**synthetis**
+<img src="http://i.imgur.com/s3zyPM7.png" width="256" height="256">
 
-
-synthesis ![alt tag](http://i.imgur.com/s3zyPM7.png)
+### Bricks
+**origin**
+<img src="http://i.imgur.com/bxwaRFA.png" width="256" height="256">
+**synthetis**
+<img src="http://i.imgur.com/QpiRrPo.png" width="256" height="256">
