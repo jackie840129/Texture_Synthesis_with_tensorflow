@@ -13,4 +13,6 @@ I use histogram matching first to create a noise picture which has the same dist
 
 ## Results
 
-origin ![alt tag](http://i.imgur.com/hlfckUu.png = 100x100) synthesis ![alt tag](http://i.imgur.com/s3zyPM7.png)
+origin ![image](http://i.imgur.com/hlfckUu.png = 50x50) 
+
+synthesis ![alt tag](http://i.imgur.com/s3zyPM7.png)
