@@ -10,11 +10,11 @@ import sys
 import shutil
 
 img_name = str(sys.argv[1])
-if os.path.exists('./result'):
-    shutil.rmtree('./result')
+if os.path.exists('./result/'):
+    shutil.rmtree('./result/')
+    os.makedirs('./result/')
 else :
-    os.makedirs('./result')
-
+    os.makedirs('./result/')
 ## Process the origin image to be an tensorflow tensor
 origin_img  = skimage.io.imread("./test_data/"+img_name) # [0,255]
 proc_img = utils.load_image("./test_data/"+img_name)   # [0,1)
@@ -70,25 +70,21 @@ with tf.Session(config=config) as sess:
     sess.run(tf.initialize_all_variables())
     
     Iteration = 5000
+    counter = 0
+    temp_loss = 0 
     for i in range(0,Iteration):
-        # if i<500:
-            # sess.run(train_step)
-        # elif i>=500 and i<1000:
-            # sess.run(train_step2)
-        # elif i>=1000 and i<2000:
-            # sess.run(train_step3)
-        # elif i>=2000:
-            # sess.run(train_step4)
         sess.run(train_step)
         sess.run(r_tex)
+        if i == 0:
+            temp_loss = loss_sum.eval()
         if i%10==0:
             loss = loss_sum.eval()
+            if loss > temp_loss:
+                counter+=1
             sys.stdout.write('\r')
-            sys.stdout.write("[%-50s] %d/%d ,loss=%.4f" % ('='*int(i*50/Iteration),i,Iteration,loss))
+            sys.stdout.write("[%-50s] %d/%d ,loss=%e" % ('='*int(i*50/Iteration),i,Iteration,loss))
             sys.stdout.flush()
-            # sleep(0.25)
-        # if i % 10 == 0:
-            # print("loss of iteration ",i,loss_sum.eval(),sep=" ") 
+            temp_loss = loss
         if i%500 == 0 and i!=0:
             answer = tex.eval()
             answer = answer.reshape(256,256,3)
@@ -96,8 +92,11 @@ with tf.Session(config=config) as sess:
             # print('Mean = ', np.mean(answer))
             filename = "./result/%safter.jpg"%(str(i))
             skimage.io.imsave(filename,answer)
+        if counter > 3:
+            print('\n','Early Stop!')
+            break
         
     answer=tex.eval()
     answer=answer.reshape(256,256,3)
     answer = (utils.histogram_matching(answer,proc_img)*255.).astype('uint8')
-    skimage.io.imsave("./result/final.jpg",answer)
+    skimage.io.imsave("./result/final_texture.jpg",answer)
