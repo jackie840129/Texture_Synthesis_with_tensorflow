@@ -24,7 +24,7 @@ I use histogram matching first to create a noise picture which has the same dist
 The VGG-19 NPY file can be downloaded from [here](https://mega.nz/#!xZ8glS6J!MAnE91ND_WyfZ_8mvkuSa2YcA7q-1ehfSm-Q1fxOvvs)
 
 ### Instruction
-`$ python texture_synthesis.py pebbles.jpg`
+`$ python3 texture_synthesis.py pebbles.jpg`
 
 (Put your images in **test_data/** folder and directly type the image name)
 
